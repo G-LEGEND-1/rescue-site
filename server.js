@@ -59,15 +59,26 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
 
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-// Connect to MongoDB with Render optimizations
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+// FIXED: Connect to MongoDB (removed deprecated options)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err.message);
+    console.log('⚠️ Application will continue but database operations will fail');
+  });
+
+// MongoDB connection events
+mongoose.connection.on('error', err => {
+  console.error('❌ MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️ MongoDB disconnected');
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('✅ MongoDB connected successfully');
+});
 
 // Multer configuration for Render (use /tmp directory)
 const upload = multer({ 
