@@ -10,6 +10,6 @@ const chatSchema = new mongoose.Schema({
       time: { type: Date, default: Date.now }
     }
   ]
-}, { timestamps:true });
+}, { timestamps: true });
 
 module.exports = mongoose.model('Chat', chatSchema);

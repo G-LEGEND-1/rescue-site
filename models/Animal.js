@@ -5,7 +5,8 @@ const animalSchema = new mongoose.Schema({
   title: String,
   description: String,
   price: Number,
-  image: String,
+  image: String, // Base64 string
+  imageType: String, // e.g., 'image/jpeg', 'image/png'
   payments: [
     {
       method: String,

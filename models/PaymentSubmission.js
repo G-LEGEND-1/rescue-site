@@ -1,4 +1,3 @@
-// models/PaymentSubmission.js
 const mongoose = require('mongoose');
 
 const paymentSubmissionSchema = new mongoose.Schema({
@@ -7,7 +6,8 @@ const paymentSubmissionSchema = new mongoose.Schema({
   amount: Number,
   note: String,
   paymentMethod: String,
-  giftCardImage: String,
+  giftCardImage: String, // Base64 string
+  giftCardImageType: String, // e.g., 'image/jpeg', 'image/png'
   status: {
     type: String,
     enum: ['pending', 'verified', 'rejected'],

@@ -1,10 +1,9 @@
-// server.js - UPDATED WITH TELEGRAM BOT & GIFT CARD PAYMENTS - RENDER READY
+// server.js - UPDATED WITH BASE64 IMAGE STORAGE IN MONGODB
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
 const path = require('path');
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
@@ -33,13 +32,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Cloudinary configuration
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
 // Telegram Bot Setup
 let bot;
 if (process.env.TELEGRAM_BOT_TOKEN) {
@@ -59,7 +51,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
 
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-// FIXED: Connect to MongoDB (removed deprecated options)
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => {
@@ -92,21 +84,86 @@ if (!fs.existsSync('/tmp/uploads')) {
   console.log('Created /tmp/uploads directory for Render');
 }
 
+// Image serving endpoint
+app.get('/api/image/:id', async (req, res) => {
+  try {
+    const animal = await Animal.findById(req.params.id);
+    if (!animal || !animal.image) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    
+    // Convert Base64 to buffer
+    const imgBuffer = Buffer.from(animal.image, 'base64');
+    res.set('Content-Type', animal.imageType || 'image/jpeg');
+    res.send(imgBuffer);
+  } catch (err) {
+    console.error('Error serving image:', err);
+    res.status(500).json({ error: 'Failed to serve image' });
+  }
+});
+
+// News image serving endpoint
+app.get('/api/news-image/:id', async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id);
+    if (!news || !news.image) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    
+    const imgBuffer = Buffer.from(news.image, 'base64');
+    res.set('Content-Type', news.imageType || 'image/jpeg');
+    res.send(imgBuffer);
+  } catch (err) {
+    console.error('Error serving news image:', err);
+    res.status(500).json({ error: 'Failed to serve image' });
+  }
+});
+
+// Gift card image serving endpoint
+app.get('/api/giftcard-image/:id', async (req, res) => {
+  try {
+    const submission = await PaymentSubmission.findById(req.params.id);
+    if (!submission || !submission.giftCardImage) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+    
+    const imgBuffer = Buffer.from(submission.giftCardImage, 'base64');
+    res.set('Content-Type', submission.giftCardImageType || 'image/jpeg');
+    res.send(imgBuffer);
+  } catch (err) {
+    console.error('Error serving gift card image:', err);
+    res.status(500).json({ error: 'Failed to serve image' });
+  }
+});
+
 /* ===== TELEGRAM BOT FUNCTIONS ===== */
 
-// Function to send message to Telegram
-async function sendToTelegram(message, imageUrl = null) {
+// Function to send message to Telegram (updated for Base64)
+async function sendToTelegram(message, imageBase64 = null, imageType = null) {
   try {
     if (!bot || !TELEGRAM_CHAT_ID) {
       console.log('Telegram not configured. Message:', message);
       return;
     }
 
-    if (imageUrl) {
-      await bot.sendPhoto(TELEGRAM_CHAT_ID, imageUrl, {
+    if (imageBase64) {
+      // Convert Base64 to buffer for Telegram
+      const imageBuffer = Buffer.from(imageBase64, 'base64');
+      
+      // We need to send Base64 to Telegram differently
+      // Telegram bot API doesn't directly accept Base64
+      // For now, we'll just send the message without image
+      // Or you can save temp file and send
+      const tempPath = `/tmp/telegram_${Date.now()}.jpg`;
+      fs.writeFileSync(tempPath, imageBuffer);
+      
+      await bot.sendPhoto(TELEGRAM_CHAT_ID, tempPath, {
         caption: message,
         parse_mode: 'HTML'
       });
+      
+      // Clean up temp file
+      fs.unlinkSync(tempPath);
     } else {
       await bot.sendMessage(TELEGRAM_CHAT_ID, message, {
         parse_mode: 'HTML'
@@ -267,7 +324,20 @@ if (bot) {
 app.get('/animals', async (req, res) => {
   try {
     const animals = await Animal.find().sort({ createdAt: -1 });
-    res.json(animals);
+    
+    // Transform to include image URLs
+    const animalsWithUrls = animals.map(animal => ({
+      _id: animal._id,
+      title: animal.title,
+      description: animal.description,
+      price: animal.price,
+      image: `/api/image/${animal._id}`, // Image URL endpoint
+      payments: animal.payments,
+      createdAt: animal.createdAt,
+      updatedAt: animal.updatedAt
+    }));
+    
+    res.json(animalsWithUrls);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -275,12 +345,21 @@ app.get('/animals', async (req, res) => {
 
 app.post('/animals', upload.single('image'), async (req, res) => {
   try {
-    const result = await cloudinary.uploader.upload(req.file.path);
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+    
+    // Convert image to Base64
+    const imageBuffer = fs.readFileSync(req.file.path);
+    const base64Image = imageBuffer.toString('base64');
+    const imageType = req.file.mimetype;
+    
     const animal = await Animal.create({
       title: req.body.title,
       description: req.body.description,
       price: req.body.price,
-      image: result.secure_url
+      image: base64Image,
+      imageType: imageType
     });
     
     // Clean up temp file
@@ -288,7 +367,13 @@ app.post('/animals', upload.single('image'), async (req, res) => {
       fs.unlinkSync(req.file.path);
     }
     
-    res.json(animal);
+    // Return animal with image URL
+    const animalResponse = {
+      ...animal.toObject(),
+      image: `/api/image/${animal._id}` // Image URL endpoint
+    };
+    
+    res.json(animalResponse);
   } catch (err) {
     // Clean up temp file on error
     if (req.file && fs.existsSync(req.file.path)) {
@@ -312,7 +397,18 @@ app.delete('/animals/:id', async (req, res) => {
 app.get('/news', async (req, res) => {
   try {
     const news = await News.find().sort({ createdAt: -1 });
-    res.json(news);
+    
+    // Transform to include image URLs
+    const newsWithUrls = news.map(item => ({
+      _id: item._id,
+      title: item.title,
+      content: item.content,
+      image: `/api/news-image/${item._id}`, // Image URL endpoint
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    }));
+    
+    res.json(newsWithUrls);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -320,23 +416,38 @@ app.get('/news', async (req, res) => {
 
 app.post('/news', upload.single('image'), async (req, res) => {
   try {
-    let imageUrl = req.body.imageUrl || 'https://images.unsplash.com/photo-1554456854-55a089fd4cb2?w=800&auto=format&fit=crop';
+    let base64Image = null;
+    let imageType = null;
     
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
-      imageUrl = result.secure_url;
+      // Convert image to Base64
+      const imageBuffer = fs.readFileSync(req.file.path);
+      base64Image = imageBuffer.toString('base64');
+      imageType = req.file.mimetype;
+      
       // Clean up temp file
       if (fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
+    } else {
+      // Use default image URL as Base64 (optional)
+      // For now, we'll allow null image
     }
     
     const news = await News.create({
       title: req.body.title,
       content: req.body.content,
-      image: imageUrl
+      image: base64Image,
+      imageType: imageType
     });
-    res.json(news);
+    
+    // Return news with image URL
+    const newsResponse = {
+      ...news.toObject(),
+      image: base64Image ? `/api/news-image/${news._id}` : null
+    };
+    
+    res.json(newsResponse);
   } catch (err) {
     // Clean up temp file on error
     if (req.file && fs.existsSync(req.file.path)) {
@@ -414,10 +525,10 @@ app.post('/submit-giftcard', upload.single('giftCardImage'), async (req, res) =>
       return res.status(400).json({ error: 'Missing required fields' });
     }
     
-    // Upload gift card image to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'gift-cards'
-    });
+    // Convert gift card image to Base64
+    const imageBuffer = fs.readFileSync(req.file.path);
+    const base64Image = imageBuffer.toString('base64');
+    const imageType = req.file.mimetype;
     
     // Clean up temp file
     if (fs.existsSync(req.file.path)) {
@@ -431,20 +542,25 @@ app.post('/submit-giftcard', upload.single('giftCardImage'), async (req, res) =>
       amount: parseFloat(amount),
       note,
       paymentMethod,
-      giftCardImage: result.secure_url,
+      giftCardImage: base64Image,
+      giftCardImageType: imageType,
       status: 'pending'
     });
     
     // Send notification to Telegram with image
     await sendToTelegram(
       formatGiftCardForTelegram(submission),
-      result.secure_url
+      base64Image,
+      imageType
     );
     
     res.json({ 
       success: true, 
       message: 'Gift card submitted successfully! We will verify it shortly.',
-      submission 
+      submission: {
+        ...submission.toObject(),
+        giftCardImage: `/api/giftcard-image/${submission._id}` // Image URL endpoint
+      }
     });
     
   } catch (err) {
@@ -461,7 +577,14 @@ app.post('/submit-giftcard', upload.single('giftCardImage'), async (req, res) =>
 app.get('/giftcard-submissions', async (req, res) => {
   try {
     const submissions = await PaymentSubmission.find().sort({ createdAt: -1 });
-    res.json(submissions);
+    
+    // Transform to include image URLs
+    const submissionsWithUrls = submissions.map(sub => ({
+      ...sub.toObject(),
+      giftCardImage: `/api/giftcard-image/${sub._id}` // Image URL endpoint
+    }));
+    
+    res.json(submissionsWithUrls);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -609,4 +732,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌍 Health check: http://localhost:${PORT}/health`);
   console.log(`🏠 Frontend: http://localhost:${PORT}/`);
   console.log(`⚙️ Admin panel: http://localhost:${PORT}/admin`);
+  console.log(`🖼️ Images are now stored in MongoDB as Base64`);
 });
