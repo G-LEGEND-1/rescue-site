@@ -463,7 +463,7 @@ let animals = [];
 let cart = {};
 let otherAmount = 0;
 
-fetch('http://localhost:5000/animals')
+fetch('https://rescue-site.onrender.com/animals')
   .then(res => res.json())
   .then(data => {
     animals = data;
@@ -592,7 +592,7 @@ chatBtn.onclick = () => {
 };
 
 /* LOAD NEWS */
-fetch('http://localhost:5000/news')
+fetch('https://rescue-site.onrender.com/news')
   .then(res => res.json())
   .then(items => {
     items.forEach(n => {

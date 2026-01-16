@@ -802,7 +802,7 @@ async function addAnimal() {
   formData.append('image', selectedImageFile);
   
   try {
-    const response = await fetch('http://localhost:5000/animals', {
+    const response = await fetch('https://rescue-site.onrender.com/animals', {
       method: 'POST',
       body: formData
     });
@@ -830,7 +830,7 @@ async function addAnimal() {
 
 async function loadAnimals() {
   try {
-    const response = await fetch('http://localhost:5000/animals');
+    const response = await fetch('https://rescue-site.onrender.com/animals');
     const animals = await response.json();
     
     document.getElementById('animalCount').textContent = animals.length;
@@ -870,7 +870,7 @@ async function deleteAnimal(id) {
   if (!confirm('Are you sure you want to delete this donation item?')) return;
   
   try {
-    const response = await fetch(`http://localhost:5000/animals/${id}`, {
+    const response = await fetch(`https://rescue-site.onrender.com/animals/${id}`, {
       method: 'DELETE'
     });
     
@@ -910,7 +910,7 @@ async function addPayment() {
   }
   
   try {
-    const response = await fetch('http://localhost:5000/payments', {
+    const response = await fetch('https://rescue-site.onrender.com/payments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -946,7 +946,7 @@ async function addPayment() {
 
 async function loadPayments() {
   try {
-    const response = await fetch('http://localhost:5000/payments');
+    const response = await fetch('https://rescue-site.onrender.com/payments');
     const payments = await response.json();
     
     document.getElementById('paymentCount').textContent = payments.length;
@@ -985,7 +985,7 @@ async function deletePayment(id) {
   if (!confirm('Are you sure you want to delete this payment method?')) return;
   
   try {
-    const response = await fetch(`http://localhost:5000/payments/${id}`, {
+    const response = await fetch(`https://rescue-site.onrender.com/payments/${id}`, {
       method: 'DELETE'
     });
     
@@ -1025,7 +1025,7 @@ async function addNews() {
   }
   
   try {
-    const response = await fetch('http://localhost:5000/news', {
+    const response = await fetch('https://rescue-site.onrender.com/news', {
       method: 'POST',
       body: formData
     });
@@ -1052,7 +1052,7 @@ async function addNews() {
 
 async function loadNews() {
   try {
-    const response = await fetch('http://localhost:5000/news');
+    const response = await fetch('https://rescue-site.onrender.com/news');
     const news = await response.json();
     
     document.getElementById('newsCount').textContent = news.length;
@@ -1092,7 +1092,7 @@ async function deleteNews(id) {
   if (!confirm('Are you sure you want to delete this news article?')) return;
   
   try {
-    const response = await fetch(`http://localhost:5000/news/${id}`, {
+    const response = await fetch(`https://rescue-site.onrender.com/news/${id}`, {
       method: 'DELETE'
     });
     
@@ -1112,7 +1112,7 @@ async function deleteNews(id) {
 // ===== CHAT FUNCTIONS =====
 async function loadChats() {
   try {
-    const response = await fetch('http://localhost:5000/chat');
+    const response = await fetch('https://rescue-site.onrender.com/chat');
     const chats = await response.json();
     
     document.getElementById('chatCount').textContent = chats.length;
@@ -1180,7 +1180,7 @@ async function selectChat(chatId, userName, userEmail) {
 
 async function loadChatMessages(chatId) {
   try {
-    const response = await fetch('http://localhost:5000/chat');
+    const response = await fetch('https://rescue-site.onrender.com/chat');
     const chats = await response.json();
     const chat = chats.find(c => c._id === chatId);
     
@@ -1263,7 +1263,7 @@ async function sendAdminReply() {
   
   try {
     // Send to server
-    const response = await fetch(`http://localhost:5000/chat/${selectedChatId}/reply`, {
+    const response = await fetch(`https://rescue-site.onrender.com/chat/${selectedChatId}/reply`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message })
@@ -1316,10 +1316,10 @@ function startChatPolling() {
 async function loadStats() {
   try {
     const [animalsRes, paymentsRes, newsRes, chatsRes] = await Promise.all([
-      fetch('http://localhost:5000/animals'),
-      fetch('http://localhost:5000/payments'),
-      fetch('http://localhost:5000/news'),
-      fetch('http://localhost:5000/chat')
+      fetch('https://rescue-site.onrender.com/animals'),
+      fetch('https://rescue-site.onrender.com/payments'),
+      fetch('https://rescue-site.onrender.com/news'),
+      fetch('https://rescue-site.onrender.com/chat')
     ]);
     
     const animals = await animalsRes.json();
