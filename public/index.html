@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rescue Paws</title>
+
+<style>
+/* ===== GLOBAL ===== */
+body {
+  background:#0b0d10;
+  color:#ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  padding:20px;
+  font-size:20px;
+}
+
+/* ===== HEADER ===== */
+header {
+  text-align:center;
+  margin-bottom:25px;
+}
+
+header img {
+  width:90px;
+}
+
+header h1 {
+  font-size:38px;
+  font-weight:900;
+  margin:10px 0 0;
+}
+
+/* ===== HERO TEXT ===== */
+.hero {
+  text-align:center;
+  margin:30px 0;
+  padding:20px;
+}
+
+.hero h1 {
+  font-size:36px;
+  font-weight:900;
+  color:#ffd700;
+  margin-bottom:15px;
+}
+
+.hero p {
+  font-size:22px;
+  margin:10px 0;
+  line-height:1.4;
+}
+
+.hero .lead {
+  color:#2f80ed;
+  font-weight:600;
+}
+
+/* ===== TAX SECTION ===== */
+.tax-section {
+  margin:40px 0;
+  padding:25px;
+  background:#1f2429;
+  border-radius:20px;
+}
+
+.tax-section h2 {
+  font-size:28px;
+  font-weight:900;
+  color:#ffd700;
+  margin-bottom:15px;
+  text-align:center;
+}
+
+.tax-id {
+  background:#2a2f35;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:900;
+  margin:20px 0;
+  font-size:20px;
+  border:2px dashed #2f80ed;
+}
+
+/* ===== MATCHING GIFT ===== */
+.matching-gift {
+  margin:40px 0;
+  padding:25px;
+  background:#1f2429;
+  border-radius:20px;
+  border-left:5px solid #28a745;
+}
+
+.matching-gift h2 {
+  font-size:28px;
+  font-weight:900;
+  color:#28a745;
+  margin-bottom:15px;
+  text-align:center;
+}
+
+/* ===== GRID - CHANGED TO 2 PER ROW ===== */
+.cards {
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:22px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background:#1f2429;
+  border-radius:26px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 6px 18px rgba(0,0,0,.6);
+  transition: all 0.3s ease;
+}
+
+/* Selected state for cards */
+.card.selected {
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* IMAGE */
+.card img {
+  width:100%;
+  height:260px;
+  object-fit:cover;
+}
+
+/* PRICE BADGE */
+.price {
+  position:absolute;
+  top:18px;
+  left:18px;
+  background:#1f6feb;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:900;
+}
+
+/* Selected badge */
+.selected-badge {
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:#ffd700;
+  color:#000;
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:18px;
+  font-weight:900;
+  display:none;
+}
+
+.card.selected .selected-badge {
+  display:block;
+}
+
+/* TEXT */
+.info {
+  padding:20px;
+  text-align:center;
+}
+
+.info p {
+  font-size:22px;
+  font-weight:700;
+  line-height:1.4;
+}
+
+/* ===== QUANTITY ===== */
+.qty {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:22px;
+  margin-top:18px;
+}
+
+.qty button {
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  border:none;
+  background:#2f80ed;
+  color:#fff;
+  font-size:34px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.qty span {
+  font-size:28px;
+  font-weight:900;
+  min-width:50px;
+  text-align:center;
+}
+
+/* ===== OTHER AMOUNT SECTION ===== */
+.other-amount-section {
+  margin: 40px 0;
+  padding: 25px;
+  background: #1f2429;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.other-amount-section h2 {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffd700;
+  margin-bottom: 20px;
+}
+
+.amount-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.dollar-sign {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+#otherAmount {
+  width: 200px;
+  padding: 15px 20px;
+  font-size: 24px;
+  font-weight: bold;
+  background: #2a2f35;
+  border: 2px solid #2f80ed;
+  border-radius: 12px;
+  color: white;
+  text-align: center;
+}
+
+#otherAmount::placeholder {
+  color: #a0a0a0;
+}
+
+.amount-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.amount-btn {
+  padding: 12px 24px;
+  background: #2a2f35;
+  border: 2px solid #2f80ed;
+  border-radius: 10px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.amount-btn:hover {
+  background: #2f80ed;
+}
+
+/* ===== CARE PACKAGE ===== */
+#packageBox {
+  background:#3b78b4;
+  border-radius:20px;
+  padding:24px;
+  margin:30px 0;
+  text-align:center;
+  font-size:28px;
+  font-weight:900;
+}
+
+/* Breakdown of costs */
+.breakdown {
+  margin-top: 15px;
+  font-size: 18px;
+  color: #e0e0e0;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 2px solid rgba(255,255,255,0.2);
+}
+
+/* ===== FLOATING DONATE ===== */
+#donate {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#28a745;
+  color:#fff;
+  padding:22px 46px;
+  border-radius:60px;
+  font-size:28px;
+  font-weight:900;
+  box-shadow:0 8px 20px rgba(0,0,0,.6);
+  cursor:pointer;
+  z-index:1000;
+}
+
+/* ===== CHAT BUTTON ===== */
+#chatBtn {
+  position:fixed;
+  bottom:100px;
+  right:20px;
+  background:#1f6feb;
+  padding:18px 22px;
+  border-radius:50px;
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+  z-index:1000;
+}
+
+/* ===== NEWS ===== */
+.news {
+  margin-top:50px;
+}
+
+.news-item {
+  background:#1f2429;
+  padding:18px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+
+.news-item img {
+  width:100%;
+  border-radius:14px;
+}
+
+/* ===== FINAL INFO ===== */
+.final-info {
+  margin:40px 0 100px;
+  padding:25px;
+  background:#1f2429;
+  border-radius:20px;
+  text-align:center;
+}
+
+.final-info p {
+  margin:15px 0;
+  font-size:18px;
+  color:#a0a0a0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <img src="logo.png" alt="Logo">
+  <h1>Rescue Paws</h1>
+</header>
+
+<!-- HERO TEXT -->
+<div class="hero">
+  <h1>Save a Freezing, Unloved Dog This Winter!</h1>
+  <p class="lead">Please, help a desperate "backyard dog" by rushing an emergency care package today.</p>
+  <p>Choose as many gifts below as you'd like, and our fieldworkers will deliver them to a neglected dog.</p>
+  <p><strong>All funds donated through virtual care packages will support PETA's Community Animal Project and its vital work to help companion animals in need.</strong></p>
+</div>
+
+<h2>Select Your Gifts</h2>
+
+<!-- CARDS - NOW 2 PER ROW -->
+<div class="cards" id="cards"></div>
+
+<!-- OTHER AMOUNT SECTION -->
+<div class="other-amount-section">
+  <h2>Want to Give More? Add Any Amount</h2>
+  <p>If you'd like to donate an additional amount beyond the care packages, enter it below:</p>
+  
+  <div class="amount-input">
+    <span class="dollar-sign">$</span>
+    <input type="number" id="otherAmount" placeholder="0" min="0" step="1">
+  </div>
+  
+  <div class="amount-buttons">
+    <button class="amount-btn" onclick="addAmount(10)">+ $10</button>
+    <button class="amount-btn" onclick="addAmount(25)">+ $25</button>
+    <button class="amount-btn" onclick="addAmount(50)">+ $50</button>
+    <button class="amount-btn" onclick="addAmount(100)">+ $100</button>
+    <button class="amount-btn" onclick="clearOtherAmount()">Clear</button>
+  </div>
+</div>
+
+<!-- CARE PACKAGE SUMMARY -->
+<div id="packageBox">
+  My care package:<br>
+  <span id="packageTotal">$0</span>
+  
+  <div class="breakdown" id="breakdown"></div>
+</div>
+
+<!-- TAX SECTION -->
+<div class="tax-section">
+  <h2>Tax-Deductible Donations</h2>
+  <p><strong>Donations to PETA are in U.S. dollars and are tax-deductible to the fullest extent allowed by U.S. law.</strong> PETA's tax ID number is 52-1218336. Please print or save this message for your personal records.</p>
+  
+  <div class="tax-id">TAX ID: 52-1218336</div>
+  
+  <h2>How can a care package make a life-changing difference for "backyard dogs"?</h2>
+  <p>Every day, PETA helps lonely dogs who are languishing in backyards, longing for a friend. Sometimes, these dogs don't even have basic food or shelter.</p>
+  <p><strong>PETA's Doghouse Program</strong> allows donors to create a customized care package to help these neglected "backyard dogs" find some relief from their misery. Care packages can include food, medicine, and a custom PETA doghouse.</p>
+</div>
+
+<!-- MATCHING GIFT -->
+<div class="matching-gift">
+  <h2>Matching Gift Opportunity</h2>
+  <p><strong>Thanks to a generous group of donors supporting PETA's work, an additional gift of $75 will be made to benefit our Investigations & Rescue Fund for each new monthly donor who gives via this form until December 31, 2026, or until the $75,000 campaign goal is met.</strong></p>
+  <p>Donations made after the goal has been met will not qualify for the extra $75 gift, but they'll still make a tremendous difference to animals.</p>
+  <p><strong>All funds donated through virtual care packages go to the Community Animal Project to provide the resources most needed for dogs in distress.</strong></p>
+</div>
+
+<!-- CHAT -->
+<div id="chatBtn">💬 Chat with us</div>
+
+<!-- FLOATING DONATE -->
+<div id="donate">COMPLETE YOUR $0 DONATION</div>
+
+<!-- NEWS -->
+<div class="news">
+  <h2>Latest News</h2>
+  <div id="news"></div>
+</div>
+
+<!-- FINAL INFO -->
+<div class="final-info">
+  <p><strong>All donations are final and non-refundable.</strong></p>
+  <p>Your generous gift will provide immediate relief to suffering animals. Thank you for making a difference in the lives of backyard dogs.</p>
+</div>
+
+<script>
+let animals = [];
+let cart = {};
+let otherAmount = 0;
+
+fetch('http://localhost:5000/animals')
+  .then(res => res.json())
+  .then(data => {
+    animals = data;
+    render();
+  });
+
+function render() {
+  cards.innerHTML = '';
+
+  animals.forEach(a => {
+    const qty = cart[a._id] || 0;
+    const isSelected = qty > 0;
+
+    cards.innerHTML += `
+      <div class="card ${isSelected ? 'selected' : ''}" data-id="${a._id}">
+        <img src="${a.image}">
+        <div class="price">$${a.price}</div>
+        <div class="selected-badge">SELECTED</div>
+        <div class="info">
+          <p>${a.description}</p>
+          <div class="qty">
+            <button onclick="change('${a._id}', -1)">−</button>
+            <span>${qty}</span>
+            <button onclick="change('${a._id}', 1)">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  updateTotal();
+}
+
+function change(id, amount) {
+  cart[id] = Math.max(0, (cart[id] || 0) + amount);
+  render();
+}
+
+function updateTotal() {
+  let itemsTotal = 0;
+  let breakdownHTML = '<div class="breakdown">';
+  
+  // Calculate items total and build breakdown
+  for (let id in cart) {
+    if (cart[id] > 0) {
+      const a = animals.find(x => x._id === id);
+      const itemTotal = a.price * cart[id];
+      itemsTotal += itemTotal;
+      breakdownHTML += `
+        <div class="breakdown-item">
+          <span>${a.description} (${cart[id]} × $${a.price})</span>
+          <span>$${itemTotal}</span>
+        </div>
+      `;
+    }
+  }
+  
+  // Add other amount to breakdown if applicable
+  if (otherAmount > 0) {
+    breakdownHTML += `
+      <div class="breakdown-item">
+        <span>Additional donation</span>
+        <span>$${otherAmount}</span>
+      </div>
+    `;
+  }
+  
+  const total = itemsTotal + otherAmount;
+  
+  breakdownHTML += `
+    <div class="breakdown-item">
+      <span>Total donation</span>
+      <span>$${total}</span>
+    </div>
+  </div>`;
+  
+  document.getElementById('packageTotal').innerText = `$${total}`;
+  document.getElementById('breakdown').innerHTML = breakdownHTML;
+  donate.innerText = `COMPLETE YOUR $${total} DONATION`;
+}
+
+// Other amount functions
+function addAmount(amount) {
+  otherAmount += amount;
+  document.getElementById('otherAmount').value = otherAmount;
+  updateTotal();
+}
+
+function clearOtherAmount() {
+  otherAmount = 0;
+  document.getElementById('otherAmount').value = '';
+  updateTotal();
+}
+
+// Listen for changes in the other amount input
+document.getElementById('otherAmount').addEventListener('input', function(e) {
+  const value = parseInt(e.target.value) || 0;
+  if (value >= 0) {
+    otherAmount = value;
+    updateTotal();
+  }
+});
+
+// Listen for changes in the other amount input on blur (when user leaves the field)
+document.getElementById('otherAmount').addEventListener('blur', function(e) {
+  const value = parseInt(e.target.value) || 0;
+  if (value >= 0) {
+    otherAmount = value;
+    e.target.value = otherAmount; // Ensure the display matches the stored value
+    updateTotal();
+  }
+});
+
+/* DONATE → CHECKOUT */
+donate.onclick = () => {
+  const total = document.getElementById('packageTotal').innerText.replace('$', '');
+  localStorage.setItem('donationTotal', total);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  localStorage.setItem('otherAmount', otherAmount);
+  location.href = 'checkout.html';
+};
+
+/* CHAT */
+chatBtn.onclick = () => {
+  location.href = 'chat.html';
+};
+
+/* LOAD NEWS */
+fetch('http://localhost:5000/news')
+  .then(res => res.json())
+  .then(items => {
+    items.forEach(n => {
+      news.innerHTML += `
+        <div class="news-item">
+          <img src="${n.image}">
+          <h3>${n.title}</h3>
+          <p>${n.content}</p>
+        </div>
+      `;
+    });
+  });
+</script>
+
+</body>
+</html>

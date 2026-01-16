@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rescue Paws – Admin Dashboard</title>
+<style>
+:root {
+  --primary: #2f80ed;
+  --primary-dark: #1f6feb;
+  --bg-dark: #0b0d10;
+  --bg-card: #1f2429;
+  --bg-input: #2a2f35;
+  --text-light: #ffffff;
+  --text-gray: #a0a0a0;
+  --danger: #dc3545;
+  --success: #28a745;
+  --warning: #ffc107;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 20px;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-left h1 {
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subtitle {
+  color: var(--text-gray);
+  font-size: 14px;
+}
+
+.header-right {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-refresh {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.btn-refresh:hover {
+  background: var(--primary-dark);
+}
+
+/* ===== GRID LAYOUT ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  background: var(--primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== FORMS ===== */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-gray);
+}
+
+.form-control {
+  width: 100%;
+  padding: 14px;
+  background: var(--bg-input);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: var(--text-light);
+  font-size: 16px;
+  transition: border 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+/* ===== FILE UPLOAD ===== */
+.file-upload {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.preview-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--bg-input);
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.file-size {
+  font-size: 12px;
+  color: var(--text-gray);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+/* ===== LISTS ===== */
+.list {
+  margin-top: 20px;
+}
+
+.list-item {
+  background: var(--bg-input);
+  padding: 18px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.list-item-content {
+  flex: 1;
+}
+
+.list-item-title {
+  font-weight: 700;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.list-item-meta {
+  font-size: 14px;
+  color: var(--text-gray);
+  margin-bottom: 5px;
+}
+
+.list-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 15px;
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ===== CHAT ===== */
+.chat-container {
+  background: var(--bg-input);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.chat-message {
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+
+.chat-message.user {
+  border-left: 4px solid var(--primary);
+}
+
+.chat-message.admin {
+  border-left: 4px solid var(--success);
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.chat-name {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.chat-time {
+  font-size: 12px;
+  color: var(--text-gray);
+}
+
+.chat-text {
+  margin-top: 8px;
+}
+
+.chat-input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  background: var(--bg-input);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: var(--text-light);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ===== STATS ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  padding: 25px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 36px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  color: var(--text-gray);
+  font-size: 14px;
+}
+
+/* ===== CHAT LAYOUT ===== */
+.chat-layout {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.chat-sidebar {
+  flex: 1;
+  max-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--bg-input);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.chat-main {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages-container {
+  flex: 1;
+  background: var(--bg-input);
+  border-radius: 12px;
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.chat-sidebar-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.chat-sidebar-item:hover {
+  background: rgba(47, 128, 237, 0.1);
+}
+
+.chat-sidebar-item.active {
+  background: rgba(47, 128, 237, 0.2);
+  border-left-color: var(--primary);
+}
+
+.chat-sidebar-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.chat-sidebar-email {
+  font-size: 12px;
+  color: var(--text-gray);
+  margin-bottom: 4px;
+}
+
+.chat-sidebar-preview {
+  font-size: 12px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-sidebar-time {
+  font-size: 11px;
+  color: var(--text-gray);
+  text-align: right;
+  margin-top: 4px;
+}
+
+.chat-sidebar-unread {
+  display: inline-block;
+  background: var(--danger);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .chat-layout {
+    flex-direction: column;
+  }
+  
+  .chat-sidebar {
+    max-width: 100%;
+  }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>🐾 Rescue Paws Admin</h1>
+      <div class="subtitle">Manage donations, payments, news, and chats</div>
+    </div>
+    <div class="header-right">
+      <button class="btn-refresh" onclick="refreshAll()">
+        🔄 Refresh All
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid" id="stats"></div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+    <!-- ANIMALS CARD -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🐕 Dog Donations</div>
+        <div class="badge" id="animalCount">0</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" id="a_title" class="form-control" placeholder="e.g., Bella's Weekly Food">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="a_desc" class="form-control" placeholder="e.g., This donation will feed Bella for one week..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Price (USD)</label>
+        <input type="number" id="a_price" class="form-control" placeholder="25" min="1">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Image</label>
+        <div class="file-upload">
+          <input type="file" id="a_img_file" accept="image/*" onchange="previewImage(this, 'animalPreview')">
+          <div class="form-control" style="cursor: pointer; text-align: center;">
+            📁 Choose Image File
+          </div>
+        </div>
+        <div id="animalPreview" class="file-preview" style="display: none;">
+          <img class="preview-image" src="" alt="Preview">
+          <div class="file-info">
+            <div class="file-name" id="animalFileName"></div>
+            <div class="file-size" id="animalFileSize"></div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="addAnimal()">
+        ➕ Add Donation Item
+      </button>
+      
+      <div class="list" id="animalList"></div>
+    </div>
+
+    <!-- PAYMENTS CARD -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💰 Payment Methods</div>
+        <div class="badge" id="paymentCount">0</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Method Name</label>
+        <select id="p_method" class="form-control">
+          <option value="">Select Method</option>
+          <option value="PayPal">PayPal</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Crypto">Crypto (Bitcoin/Ethereum)</option>
+          <option value="Zelle">Zelle</option>
+          <option value="Credit Card">Credit Card</option>
+          <option value="Gift Card">Gift Card</option>
+        </select>
+      </div>
+      
+      <div id="giftCardFields" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Gift Card Instructions</label>
+          <textarea id="p_gift_instructions" class="form-control" placeholder="e.g., 1. Purchase Amazon/Google Play gift card
+2. Take screenshot of card code
+3. Email to donations@rescuepaws.org"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Accepted Gift Cards</label>
+          <input type="text" id="p_accepted_cards" class="form-control" placeholder="e.g., Amazon, Google Play, iTunes, Walmart">
+        </div>
+      </div>
+      
+      <div id="regularPaymentFields">
+        <div class="form-group">
+          <label class="form-label">Account Details</label>
+          <input type="text" id="p_details" class="form-control" placeholder="Email / Account Number / Wallet Address">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Contact Email</label>
+          <input type="email" id="p_email" class="form-control" placeholder="donations@rescuepaws.org">
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="addPayment()">
+        ➕ Add Payment Method
+      </button>
+      
+      <div class="list" id="paymentList"></div>
+    </div>
+
+    <!-- NEWS CARD -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📰 News & Updates</div>
+        <div class="badge" id="newsCount">0</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">News Title</label>
+        <input type="text" id="n_title" class="form-control" placeholder="Breaking News Title">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Featured Image</label>
+        <div class="file-upload">
+          <input type="file" id="n_img_file" accept="image/*" onchange="previewImage(this, 'newsPreview')">
+          <div class="form-control" style="cursor: pointer; text-align: center;">
+            📁 Choose News Image
+          </div>
+        </div>
+        <div id="newsPreview" class="file-preview" style="display: none;">
+          <img class="preview-image" src="" alt="Preview">
+          <div class="file-info">
+            <div class="file-name" id="newsFileName"></div>
+            <div class="file-size" id="newsFileSize"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">News Content</label>
+        <textarea id="n_content" class="form-control" placeholder="Write your news article here..."></textarea>
+      </div>
+      
+      <button class="btn btn-primary" onclick="addNews()">
+        📢 Publish News
+      </button>
+      
+      <div class="list" id="newsList"></div>
+    </div>
+
+    <!-- CHAT CARD -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💬 Live Chat Support</div>
+        <div class="badge" id="chatCount">0</div>
+      </div>
+      
+      <div class="chat-input-group">
+        <input type="text" id="chatSearch" class="chat-input" placeholder="Search chats..." onkeyup="searchChats()">
+        <select id="chatFilter" class="form-control" style="width: 150px;" onchange="loadChats()">
+          <option value="all">All Chats</option>
+          <option value="today">Today</option>
+          <option value="unread">Unread</option>
+        </select>
+      </div>
+      
+      <div class="chat-layout">
+        <!-- Chat Sidebar -->
+        <div class="chat-sidebar" id="chatSidebar">
+          <div style="text-align: center; padding: 20px; color: var(--text-gray);">
+            Loading chats...
+          </div>
+        </div>
+        
+        <!-- Chat Main Area -->
+        <div class="chat-main">
+          <div class="chat-messages-container" id="chatMessages">
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-gray);">
+              <div style="font-size: 24px; margin-bottom: 10px;">💬</div>
+              <div>Select a chat from the sidebar to view messages</div>
+            </div>
+          </div>
+          
+          <div class="form-group" style="margin-top: auto;">
+            <label class="form-label">Reply to <span id="selectedUserName" style="color: var(--primary);">[Select User]</span></label>
+            <div class="chat-input-group">
+              <input type="text" id="adminReply" class="chat-input" placeholder="Type your reply..." disabled>
+              <button class="btn btn-primary" onclick="sendAdminReply()" style="width: auto;" disabled id="sendReplyBtn">
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Global variables
+let selectedChatId = null;
+let selectedUserName = '';
+let selectedImageFile = null;
+let selectedNewsImageFile = null;
+let chatPolling = null;
+
+// ===== FILE UPLOAD FUNCTIONS =====
+function previewImage(input, previewId) {
+  const preview = document.getElementById(previewId);
+  const file = input.files[0];
+  
+  if (!file) {
+    preview.style.display = 'none';
+    return;
+  }
+  
+  // Store file globally
+  if (previewId === 'animalPreview') {
+    selectedImageFile = file;
+  } else {
+    selectedNewsImageFile = file;
+  }
+  
+  // Show file info
+  document.getElementById(previewId.replace('Preview', 'FileName')).textContent = file.name;
+  document.getElementById(previewId.replace('Preview', 'FileSize')).textContent = formatFileSize(file.size);
+  
+  // Show preview image
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    preview.querySelector('.preview-image').src = e.target.result;
+    preview.style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// ===== PAYMENT METHOD TOGGLE =====
+document.getElementById('p_method').addEventListener('change', function() {
+  const isGiftCard = this.value === 'Gift Card';
+  document.getElementById('giftCardFields').style.display = isGiftCard ? 'block' : 'none';
+  document.getElementById('regularPaymentFields').style.display = isGiftCard ? 'none' : 'block';
+});
+
+// ===== ANIMALS =====
+async function addAnimal() {
+  const title = document.getElementById('a_title').value;
+  const description = document.getElementById('a_desc').value;
+  const price = document.getElementById('a_price').value;
+  
+  if (!title || !description || !price || !selectedImageFile) {
+    alert('Please fill all fields and select an image.');
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  formData.append('price', price);
+  formData.append('image', selectedImageFile);
+  
+  try {
+    const response = await fetch('http://localhost:5000/animals', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert('Dog donation added successfully!');
+      document.getElementById('a_title').value = '';
+      document.getElementById('a_desc').value = '';
+      document.getElementById('a_price').value = '';
+      document.getElementById('a_img_file').value = '';
+      document.getElementById('animalPreview').style.display = 'none';
+      selectedImageFile = null;
+      loadAnimals();
+      loadStats();
+    } else {
+      throw new Error(data.error || 'Failed to add animal');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to add donation. Please try again.');
+  }
+}
+
+async function loadAnimals() {
+  try {
+    const response = await fetch('http://localhost:5000/animals');
+    const animals = await response.json();
+    
+    document.getElementById('animalCount').textContent = animals.length;
+    
+    let html = '';
+    animals.forEach(animal => {
+      html += `
+        <div class="list-item">
+          <img src="${animal.image}" class="list-item-image" alt="${animal.title}">
+          <div class="list-item-content">
+            <div class="list-item-title">
+              $${animal.price} - ${animal.title}
+            </div>
+            <div class="list-item-meta">
+              ${animal.description.substring(0, 100)}${animal.description.length > 100 ? '...' : ''}
+            </div>
+            <div class="list-item-meta">
+              Added: ${new Date(animal.createdAt).toLocaleDateString()}
+            </div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-danger" onclick="deleteAnimal('${animal._id}')">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      `;
+    });
+    
+    document.getElementById('animalList').innerHTML = html || '<div style="text-align: center; padding: 20px; color: var(--text-gray);">No donations added yet.</div>';
+  } catch (error) {
+    console.error('Error loading animals:', error);
+  }
+}
+
+async function deleteAnimal(id) {
+  if (!confirm('Are you sure you want to delete this donation item?')) return;
+  
+  try {
+    const response = await fetch(`http://localhost:5000/animals/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      loadAnimals();
+      loadStats();
+    } else {
+      const data = await response.json();
+      alert(data.error || 'Failed to delete');
+    }
+  } catch (error) {
+    console.error('Error deleting animal:', error);
+    alert('Failed to delete donation item.');
+  }
+}
+
+// ===== PAYMENTS =====
+async function addPayment() {
+  const method = document.getElementById('p_method').value;
+  const isGiftCard = method === 'Gift Card';
+  
+  let details, email, giftInstructions, acceptedCards;
+  
+  if (isGiftCard) {
+    giftInstructions = document.getElementById('p_gift_instructions').value;
+    acceptedCards = document.getElementById('p_accepted_cards').value;
+    details = `GIFT CARD: ${acceptedCards}\nInstructions: ${giftInstructions}`;
+    email = document.getElementById('p_email').value || 'donations@rescuepaws.org';
+  } else {
+    details = document.getElementById('p_details').value;
+    email = document.getElementById('p_email').value;
+  }
+  
+  if (!method || (!details && !isGiftCard) || (!giftInstructions && isGiftCard)) {
+    alert('Please fill all required fields.');
+    return;
+  }
+  
+  try {
+    const response = await fetch('http://localhost:5000/payments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        method, 
+        details, 
+        email,
+        giftInstructions: isGiftCard ? giftInstructions : '',
+        acceptedCards: isGiftCard ? acceptedCards : ''
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert('Payment method added successfully!');
+      document.getElementById('p_method').value = '';
+      document.getElementById('p_details').value = '';
+      document.getElementById('p_email').value = '';
+      document.getElementById('p_gift_instructions').value = '';
+      document.getElementById('p_accepted_cards').value = '';
+      document.getElementById('giftCardFields').style.display = 'none';
+      document.getElementById('regularPaymentFields').style.display = 'block';
+      loadPayments();
+      loadStats();
+    } else {
+      throw new Error(data.error || 'Failed to add payment');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to add payment method.');
+  }
+}
+
+async function loadPayments() {
+  try {
+    const response = await fetch('http://localhost:5000/payments');
+    const payments = await response.json();
+    
+    document.getElementById('paymentCount').textContent = payments.length;
+    
+    let html = '';
+    payments.forEach(payment => {
+      const isGiftCard = payment.method === 'Gift Card';
+      html += `
+        <div class="list-item">
+          <div class="list-item-content">
+            <div class="list-item-title">
+              ${payment.method} ${isGiftCard ? '🎁' : ''}
+            </div>
+            <div class="list-item-meta">
+              ${payment.details.split('\n')[0]}
+            </div>
+            ${payment.email ? `<div class="list-item-meta">📧 ${payment.email}</div>` : ''}
+            ${isGiftCard && payment.acceptedCards ? `<div class="list-item-meta">Accepted: ${payment.acceptedCards}</div>` : ''}
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-danger" onclick="deletePayment('${payment._id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    });
+    
+    document.getElementById('paymentList').innerHTML = html || '<div style="text-align: center; padding: 20px; color: var(--text-gray);">No payment methods added yet.</div>';
+  } catch (error) {
+    console.error('Error loading payments:', error);
+  }
+}
+
+async function deletePayment(id) {
+  if (!confirm('Are you sure you want to delete this payment method?')) return;
+  
+  try {
+    const response = await fetch(`http://localhost:5000/payments/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      loadPayments();
+      loadStats();
+    } else {
+      const data = await response.json();
+      alert(data.error || 'Failed to delete');
+    }
+  } catch (error) {
+    console.error('Error deleting payment:', error);
+    alert('Failed to delete payment method.');
+  }
+}
+
+// ===== NEWS =====
+async function addNews() {
+  const title = document.getElementById('n_title').value;
+  const content = document.getElementById('n_content').value;
+  
+  if (!title || !content) {
+    alert('Please fill all required fields.');
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('content', content);
+  
+  // Only append image if selected
+  if (selectedNewsImageFile) {
+    formData.append('image', selectedNewsImageFile);
+  } else {
+    // Use a default image if none selected
+    formData.append('imageUrl', 'https://images.unsplash.com/photo-1554456854-55a089fd4cb2?w=800&auto=format&fit=crop');
+  }
+  
+  try {
+    const response = await fetch('http://localhost:5000/news', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert('News published successfully!');
+      document.getElementById('n_title').value = '';
+      document.getElementById('n_content').value = '';
+      document.getElementById('n_img_file').value = '';
+      document.getElementById('newsPreview').style.display = 'none';
+      selectedNewsImageFile = null;
+      loadNews();
+      loadStats();
+    } else {
+      throw new Error(data.error || 'Failed to publish news');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to publish news.');
+  }
+}
+
+async function loadNews() {
+  try {
+    const response = await fetch('http://localhost:5000/news');
+    const news = await response.json();
+    
+    document.getElementById('newsCount').textContent = news.length;
+    
+    let html = '';
+    news.forEach(item => {
+      html += `
+        <div class="list-item">
+          <img src="${item.image}" class="list-item-image" alt="${item.title}">
+          <div class="list-item-content">
+            <div class="list-item-title">
+              ${item.title}
+            </div>
+            <div class="list-item-meta">
+              ${item.content.substring(0, 100)}${item.content.length > 100 ? '...' : ''}
+            </div>
+            <div class="list-item-meta">
+              Published: ${new Date(item.createdAt).toLocaleDateString()}
+            </div>
+          </div>
+          <div class="list-item-actions">
+            <button class="btn btn-danger" onclick="deleteNews('${item._id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    });
+    
+    document.getElementById('newsList').innerHTML = html || '<div style="text-align: center; padding: 20px; color: var(--text-gray);">No news published yet.</div>';
+  } catch (error) {
+    console.error('Error loading news:', error);
+  }
+}
+
+async function deleteNews(id) {
+  if (!confirm('Are you sure you want to delete this news article?')) return;
+  
+  try {
+    const response = await fetch(`http://localhost:5000/news/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      loadNews();
+      loadStats();
+    } else {
+      const data = await response.json();
+      alert(data.error || 'Failed to delete');
+    }
+  } catch (error) {
+    console.error('Error deleting news:', error);
+    alert('Failed to delete news article.');
+  }
+}
+
+// ===== CHAT FUNCTIONS =====
+async function loadChats() {
+  try {
+    const response = await fetch('http://localhost:5000/chat');
+    const chats = await response.json();
+    
+    document.getElementById('chatCount').textContent = chats.length;
+    
+    let html = '';
+    chats.forEach(chat => {
+      const lastMessage = chat.messages && chat.messages.length > 0 
+        ? chat.messages[chat.messages.length - 1]
+        : null;
+      
+      const unreadCount = chat.messages ? 
+        chat.messages.filter(m => m.sender === 'user' && !m.read).length : 0;
+      
+      html += `
+        <div class="chat-sidebar-item ${selectedChatId === chat._id ? 'active' : ''}" 
+             onclick="selectChat('${chat._id}', '${chat.name}', '${chat.email}')">
+          <div class="chat-sidebar-name">
+            ${chat.name}
+            ${unreadCount > 0 ? `<span class="chat-sidebar-unread">${unreadCount}</span>` : ''}
+          </div>
+          <div class="chat-sidebar-email">${chat.email}</div>
+          ${lastMessage ? `
+            <div class="chat-sidebar-preview">
+              ${lastMessage.sender === 'user' ? '👤' : '🛡️'} 
+              ${lastMessage.text.substring(0, 30)}${lastMessage.text.length > 30 ? '...' : ''}
+            </div>
+          ` : ''}
+          <div class="chat-sidebar-time">
+            ${formatTime(new Date(chat.updatedAt))}
+          </div>
+        </div>
+      `;
+    });
+    
+    const sidebar = document.getElementById('chatSidebar');
+    sidebar.innerHTML = html || '<div style="text-align: center; padding: 20px; color: var(--text-gray);">No active chats.</div>';
+  } catch (error) {
+    console.error('Error loading chats:', error);
+  }
+}
+
+async function selectChat(chatId, userName, userEmail) {
+  selectedChatId = chatId;
+  selectedUserName = userName;
+  
+  // Update UI
+  document.getElementById('selectedUserName').textContent = userName;
+  document.getElementById('adminReply').placeholder = `Reply to ${userName}...`;
+  document.getElementById('adminReply').disabled = false;
+  document.getElementById('adminReply').focus();
+  document.getElementById('sendReplyBtn').disabled = false;
+  
+  // Load chat messages
+  await loadChatMessages(chatId);
+  
+  // Update active state in sidebar
+  document.querySelectorAll('.chat-sidebar-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  event.currentTarget.classList.add('active');
+  
+  // Mark messages as read
+  await markMessagesAsRead(chatId);
+}
+
+async function loadChatMessages(chatId) {
+  try {
+    const response = await fetch('http://localhost:5000/chat');
+    const chats = await response.json();
+    const chat = chats.find(c => c._id === chatId);
+    
+    if (chat) {
+      let html = '';
+      
+      if (chat.messages.length === 0) {
+        html = `
+          <div style="text-align: center; padding: 40px 20px; color: var(--text-gray);">
+            <div style="font-size: 24px; margin-bottom: 10px;">💬</div>
+            <div>No messages yet. Start the conversation!</div>
+          </div>
+        `;
+      } else {
+        chat.messages.forEach(msg => {
+          const isAdmin = msg.sender === 'admin';
+          const time = new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          
+          html += `
+            <div class="chat-message ${isAdmin ? 'admin' : 'user'}" 
+                 style="margin-bottom: 10px; ${isAdmin ? 'border-left-color: var(--success);' : ''}">
+              <div class="chat-header">
+                <div class="chat-name">${isAdmin ? 'Rescue Paws Support' : selectedUserName}</div>
+                <div class="chat-time">${time}</div>
+              </div>
+              <div class="chat-text">
+                ${msg.text}
+              </div>
+            </div>
+          `;
+        });
+      }
+      
+      const container = document.getElementById('chatMessages');
+      container.innerHTML = html;
+      container.scrollTop = container.scrollHeight;
+    }
+  } catch (error) {
+    console.error('Error loading chat messages:', error);
+  }
+}
+
+async function markMessagesAsRead(chatId) {
+  try {
+    // This is a placeholder - in a real app, you'd have an endpoint to mark messages as read
+    // For now, we'll just reload the chats to update the unread count
+    loadChats();
+  } catch (error) {
+    console.error('Error marking messages as read:', error);
+  }
+}
+
+async function sendAdminReply() {
+  if (!selectedChatId) {
+    alert('Please select a chat first.');
+    return;
+  }
+  
+  const message = document.getElementById('adminReply').value;
+  if (!message.trim()) return;
+  
+  // Add message to UI immediately
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const messagesContainer = document.getElementById('chatMessages');
+  messagesContainer.innerHTML += `
+    <div class="chat-message admin" style="margin-bottom: 10px; border-left-color: var(--success);">
+      <div class="chat-header">
+        <div class="chat-name">Rescue Paws Support</div>
+        <div class="chat-time">${time}</div>
+      </div>
+      <div class="chat-text">
+        ${message}
+      </div>
+    </div>
+  `;
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  
+  // Clear input
+  document.getElementById('adminReply').value = '';
+  
+  try {
+    // Send to server
+    const response = await fetch(`http://localhost:5000/chat/${selectedChatId}/reply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to send reply');
+    }
+    
+    // Reload chats to update the sidebar
+    loadChats();
+    
+  } catch (error) {
+    console.error('Error sending reply:', error);
+    alert('Failed to send reply. Please try again.');
+  }
+}
+
+function searchChats() {
+  const search = document.getElementById('chatSearch').value.toLowerCase();
+  const chatItems = document.querySelectorAll('.chat-sidebar-item');
+  
+  chatItems.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(search) ? 'flex' : 'none';
+    item.style.flexDirection = 'column';
+  });
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Start polling for new chats
+function startChatPolling() {
+  if (chatPolling) clearInterval(chatPolling);
+  
+  chatPolling = setInterval(async () => {
+    await loadChats();
+    
+    // If we have a selected chat, refresh its messages too
+    if (selectedChatId) {
+      await loadChatMessages(selectedChatId);
+    }
+  }, 5000); // Poll every 5 seconds
+}
+
+// ===== STATS =====
+async function loadStats() {
+  try {
+    const [animalsRes, paymentsRes, newsRes, chatsRes] = await Promise.all([
+      fetch('http://localhost:5000/animals'),
+      fetch('http://localhost:5000/payments'),
+      fetch('http://localhost:5000/news'),
+      fetch('http://localhost:5000/chat')
+    ]);
+    
+    const animals = await animalsRes.json();
+    const payments = await paymentsRes.json();
+    const news = await newsRes.json();
+    const chats = await chatsRes.json();
+    
+    const totalDonationValue = animals.reduce((sum, a) => sum + (a.price || 0), 0);
+    
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-number">${animals.length}</div>
+        <div class="stat-label">Donation Items</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">$${totalDonationValue}</div>
+        <div class="stat-label">Total Value</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${chats.length}</div>
+        <div class="stat-label">Active Chats</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">${payments.length}</div>
+        <div class="stat-label">Payment Methods</div>
+      </div>
+    `;
+  } catch (error) {
+    console.error('Error loading stats:', error);
+  }
+}
+
+// ===== UTILITY =====
+function refreshAll() {
+  loadAnimals();
+  loadPayments();
+  loadNews();
+  loadChats();
+  loadStats();
+}
+
+// ===== INITIAL LOAD =====
+document.addEventListener('DOMContentLoaded', function() {
+  refreshAll();
+  startChatPolling();
+  
+  // Enable sending reply with Enter key
+  document.getElementById('adminReply').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendAdminReply();
+    }
+  });
+});
+
+// ===== DRAG AND DROP =====
+document.addEventListener('DOMContentLoaded', function() {
+  const dropZones = document.querySelectorAll('.file-upload');
+  
+  dropZones.forEach(zone => {
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.border = '2px dashed var(--primary)';
+      this.style.background = 'rgba(47, 128, 237, 0.1)';
+    });
+    
+    zone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.style.border = '';
+      this.style.background = '';
+    });
+    
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.style.border = '';
+      this.style.background = '';
+      
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const input = this.querySelector('input[type="file"]');
+        input.files = e.dataTransfer.files;
+        previewImage(input, this.parentElement.nextElementSibling.id);
+      }
+    });
+  });
+});
+</script>
+<!-- Add this in head section -->
+<script src="js/config.js"></script>
+
+</body>
+</html>

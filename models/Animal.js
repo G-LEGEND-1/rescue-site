@@ -1,3 +1,4 @@
+// models/Animal.js
 const mongoose = require('mongoose');
 
 const animalSchema = new mongoose.Schema({
@@ -5,7 +6,12 @@ const animalSchema = new mongoose.Schema({
   description: String,
   price: Number,
   image: String,
-  payments: [String]
+  payments: [
+    {
+      method: String,
+      details: String
+    }
+  ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Animal', animalSchema);
